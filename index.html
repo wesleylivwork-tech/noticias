@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumo do Dia - Wesley</title>
+<style>
+  :root{
+    --bg:#0c0d10; --card:#15171c; --card2:#1b1e25;
+    --red:#e5484d; --amber:#f2b705; --text:#e8eaed; --muted:#9aa3af;
+    --line:#242830; --green:#34d399; --blue:#60a5fa; --purple:#c084fc; --lime:#a3e635;
+  }
+  html[data-theme="light"]{
+    --bg:#f4f5f7; --card:#ffffff; --card2:#eef0f3; --text:#1a1c20; --muted:#5b6470;
+    --line:#dde1e6; --amber:#b8860b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.75;transition:background .2s,color .2s}
+  .wrap{max-width:820px;margin:0 auto;padding:32px 20px 60px}
+  header{text-align:center;padding:36px 0 22px;border-bottom:1px solid var(--line);position:relative}
+  header .logo{font-size:13px;letter-spacing:4px;color:var(--amber);text-transform:uppercase;font-weight:600}
+  header h1{font-size:34px;font-weight:800;margin:8px 0 4px;letter-spacing:1px}
+  header .date{color:var(--muted);font-size:15px}
+  .theme-btn{position:absolute;top:0;right:0;background:none;border:1px solid var(--line);color:var(--text);
+    font-size:18px;width:38px;height:38px;border-radius:50%;cursor:pointer}
+  .theme-btn:hover{background:var(--card2)}
+  .stamp{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--muted)}
+  .stamp .refresh{color:var(--amber);text-decoration:none;font-weight:600;border:1px solid var(--line);padding:5px 12px;border-radius:20px}
+  .stamp .refresh:hover{background:var(--card2)}
+  .share,.dl{background:none;border:1px solid var(--line);color:var(--text);font-size:13px;font-weight:600;padding:5px 12px;border-radius:20px;cursor:pointer}
+  .share:hover,.dl:hover{border-color:#3a4557;background:var(--card2)}
+  /* players */
+  .player{background:linear-gradient(135deg,#211a05,#151206);border:1px solid #4a3d14;border-radius:12px;padding:16px 20px;margin:22px 0}
+  html[data-theme="light"] .player{background:linear-gradient(135deg,#fff8e6,#fdf3d6);border-color:#e6d38a}
+  .player-label{color:var(--amber);font-size:14px;font-weight:600;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  audio{border-radius:8px;width:100%}
+  .player-mini{margin:2px 0 16px}
+  .player-mini .mini-label{font-size:12px;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .player-mini audio{height:38px}
+  /* botao velocidade */
+  .speed{background:var(--card2);border:1px solid var(--line);color:var(--text);font-size:12px;font-weight:700;padding:3px 9px;border-radius:14px;cursor:pointer;white-space:nowrap}
+  .speed:hover{border-color:var(--amber);color:var(--amber)}
+  /* placeholder do lazy audio */
+  .load-audio{background:var(--card2);border:1px dashed var(--line);color:var(--muted);font-size:13px;padding:9px 14px;border-radius:8px;cursor:pointer;width:100%;text-align:center}
+  .load-audio:hover{border-color:var(--amber);color:var(--amber)}
+  .toc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:22px 0}
+  .toc h4{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  .toc a{display:flex;align-items:center;gap:10px;color:var(--text);text-decoration:none;padding:7px 0;font-size:15px;border-top:1px solid var(--line)}
+  .toc a:first-of-type{border-top:none}
+  .toc a:hover{color:var(--amber)}
+  .dot{width:9px;height:9px;border-radius:50%;flex:none}
+  .lead{background:linear-gradient(135deg,#1a1a12,#141410);border:1px solid #3a3420;border-left:4px solid var(--amber);border-radius:12px;padding:18px 22px;margin:26px 0;font-size:15.5px;color:#f0ecd9}
+  html[data-theme="light"] .lead{background:#fdf6e0;color:#4a4020}
+  section{margin-top:34px;scroll-margin-top:20px}
+  .sec-title{display:flex;align-items:center;gap:11px;font-size:22px;font-weight:700;margin-bottom:6px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+  .sec-title .tag{width:6px;height:24px;border-radius:3px}
+  .sec-time{font-size:12px;color:var(--muted);margin-bottom:12px}
+  .story{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin-bottom:14px}
+  .story p{color:var(--text);font-size:15.5px;margin-bottom:14px}
+  .story p:last-child{margin-bottom:0}
+  .story a{color:var(--amber);text-decoration:none;font-weight:600}
+  .story a:hover{text-decoration:underline}
+  .story .src{color:var(--muted);font-size:13px;font-style:italic}
+  /* [4] gancho pra cliente */
+  .hook{margin-top:14px;background:var(--card2);border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:8px;padding:12px 16px;font-size:14.5px}
+  .hook b{color:var(--amber)}
+  .t-guerra .tag,.t-guerra .dot{background:var(--red)}
+  .t-eco .tag,.t-eco .dot{background:var(--green)}
+  .t-pol .tag,.t-pol .dot{background:var(--blue)}
+  .t-tec .tag,.t-tec .dot{background:var(--purple)}
+  .t-ten .tag,.t-ten .dot{background:var(--lime)}
+  .market{background:linear-gradient(135deg,#0f1a15,#0c1310);border:1px solid #1e3d30;border-left:4px solid var(--green);border-radius:12px;padding:20px 22px;margin-top:34px}
+  html[data-theme="light"] .market{background:#e7f7ef}
+  .market h2{color:var(--green);font-size:15px;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+  .market p{font-size:15px}
+  .board{background:linear-gradient(135deg,#231d0d,#1a1710);border:1px solid #4a3d14;border-radius:12px;padding:20px 22px;margin-top:20px}
+  html[data-theme="light"] .board{background:#fdf6e0}
+  .board h2{color:var(--amber);font-size:15px;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+  .board p{font-size:15px}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:44px}
+  @media(max-width:600px){header h1{font-size:26px}.story{padding:16px 18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <button class="theme-btn" onclick="toggleTheme()" title="Claro/escuro">🌙</button>
+  <div class="logo">Wesley &bull; Resumo do Dia</div>
+  <h1>RESUMO DO DIA</h1>
+  <div class="date">Sexta-feira, 24 de julho de 2026</div>
+  <div class="stamp">
+    <span>Gerado em 24/07 00:20</span>
+    <a class="refresh" href="#" onclick="return false">Pra atualizar: chame "noticias"</a>
+    <button class="share" onclick="compartilhar()">Compartilhar</button>
+  </div>
+</header>
+
+<!-- PLAYER GERAL: aponta pro arquivo resumo-do-dia.mp3 -->
+<div class="player">
+  <div class="player-label">
+    <span>🎧 Ouvir tudo (o dia inteiro, bom pro carro)</span>
+    <span>
+      <button class="speed" onclick="cicloVel(this)">1x</button>
+      <a class="dl" href="resumo-do-dia.mp3" download style="text-decoration:none;padding:5px 12px">Baixar</a>
+    </span>
+  </div>
+  <audio controls preload="none" style="width:100%"><source src="resumo-do-dia.mp3" type="audio/mpeg"></audio>
+</div>
+
+<div class="toc">
+  <h4>No resumo de hoje</h4>
+  <a href="#guerra"><span class="dot" style="background:var(--red)"></span>Guerra</a>
+  <a href="#eco"><span class="dot" style="background:var(--green)"></span>Economia e Mercado</a>
+  <a href="#pol"><span class="dot" style="background:var(--blue)"></span>Política</a>
+  <a href="#tec"><span class="dot" style="background:var(--purple)"></span>Tecnologia e IA</a>
+  <a href="#ten"><span class="dot" style="background:var(--lime)"></span>Tênis</a>
+</div>
+
+<div class="lead">Dia agitado no mundo: o Oriente Médio voltou a pegar fogo com Estados Unidos e Irã trocando ataques, o que empurra o petróleo pra cima. No Brasil, a bolsa segue perto das máximas e o dólar recuou, mas o juro alto continua sendo a estrela da renda fixa. Na tecnologia, a Apple virou a empresa mais valiosa do planeta. E no tênis, Sinner reina absoluto após mais um Wimbledon.</div>
+
+<!-- Cada seção: título, data/hora, história e gancho. (áudio por seção só na versão do chat) -->
+
+<section id="guerra" class="t-guerra">
+  <div class="sec-title"><span class="tag"></span>Guerra</div>
+  <div class="sec-time">🕒 Ataque na Jordânia: 17/07 - Ucrânia: dados de 23/07</div>
+  <div class="story">
+    <p>A cena mais dura das últimas horas na Ucrânia foi longe da linha de frente: um drone ucraniano matou um menino de três anos em Voronezh, na Rússia, e a Rússia respondeu atacando um entreposto de alimentos em Pavlohrad, deixando três mortos. Os números do mês assustam, a ONU registrou quase 1.400 civis mortos só no primeiro semestre, o pior período desde o início da invasão em 2022. <span class="src">(Al Jazeera, Forbes)</span></p><p>Mas o fato mais quente é o Oriente Médio: voltou o fogo direto entre EUA e Irã. O Irã acertou uma base americana na Jordânia com mísseis e matou dois militares dos EUA; os americanos responderam com sete noites de ataques dentro do Irã. O ponto que mexe com o teu mundo: o Irã fechou o Estreito de Hormuz, por onde passa um quinto do petróleo mundial, e a gasolina nos EUA já voltou pros 4 dólares o galão. <span class="src">(Axios, NPR)</span></p>
+    <div class="hook"><b>Pra falar com cliente:</b> Petróleo em alta por causa da guerra é o gatilho perfeito pra falar de proteção da carteira. "Viu que a tensão no Oriente Médio subiu o petróleo? É por isso que ter um pedaço em ativos que se beneficiam disso, ou dolarizados, protege seu patrimônio."</div>
+  </div>
+</section>
+
+<section id="eco" class="t-eco">
+  <div class="sec-title"><span class="tag"></span>Economia e Mercado</div>
+  <div class="sec-time">🕒 Fechamento de mercado: 23/07 (18h)</div>
+  <div class="story">
+    <p>Pensa no mercado como uma gangorra. De um lado, o Brasil vai bem: o Ibovespa está batendo nos 174 mil pontos, perto das máximas do ano, e o dólar recuou pra faixa de R$ 5,17. Dólar caindo e bolsa subindo é sinal de que o dinheiro de fora está confiando no Brasil agora. <span class="src">(InfoMoney)</span></p><p>Do outro lado tem um peso que não sai: o juro. A Selic segue projetada em 14% pro fim do ano. Juro alto é como um freio de mão na economia, segura a inflação (pouco mais de 5%), mas deixa a renda fixa pagando muito bem. Por isso o cliente conservador está feliz recebendo perto de 14% ao ano quase sem risco. O fino é lembrar que isso não dura: a expectativa é cair pra 12% no ano que vem, então quem trava boa taxa agora garante rendimento por mais tempo. <span class="src">(Focus/BCB)</span></p>
+    <div class="hook"><b>Pra falar com cliente:</b> "A Selic ainda está em 14%, mas a projeção é começar a cair. Essa é a hora de travar boas taxas em prefixado ou IPCA+, porque quem garante agora leva esse rendimento pra frente mesmo quando o juro cair."</div>
+  </div>
+</section>
+
+<section id="pol" class="t-pol">
+  <div class="sec-title"><span class="tag"></span>Política</div>
+  <div class="sec-time">🕒 Articulação Lula x Congresso: 23/07</div>
+  <div class="story">
+    <p>Pensa na relação entre o governo Lula e o Congresso como um casamento brigado, e em ano de eleição cada briga pesa o dobro. A estratégia tem sido empurrar os conflitos com a barriga, mas adiar não resolve, só acumula. <span class="src">(Gazeta do Povo)</span></p><p>Três brigas resumem o momento: a cadeira vaga no STF (Lula quer Jorge Messias, mas o Senado de Alcolumbre emperra); o projeto que suaviza penas do 8 de janeiro, que pode beneficiar Bolsonaro e que Lula promete vetar enquanto o Congresso ameaça derrubar o veto; e o marco temporal das terras indígenas, com o Congresso aprovando emenda que contraria o STF. <span class="src">(Agência Brasil)</span></p>
+    <div class="hook"><b>Pra falar com cliente:</b> "O barulho político em Brasília em ano de eleição costuma mexer com o câmbio. Não é hora de apostar tudo numa direção, é hora de carteira equilibrada e diversificada, que aguenta solavanco."</div>
+  </div>
+</section>
+
+<section id="tec" class="t-tec">
+  <div class="sec-title"><span class="tag"></span>Tecnologia e IA</div>
+  <div class="sec-time">🕒 Anúncios de IA: semana de 17/07</div>
+  <div class="story">
+    <p>A melhor imagem pra esse setor é uma corrida de Fórmula 1 com vários carros colados. A OpenAI lançou uma novidade de voz que escuta e fala ao mesmo tempo; a Anthropic aparece forte em programação; e a chinesa Moonshot soltou um modelo aberto que liderou um ranking de código, mostrando a China colada nos americanos. <span class="src">(Tech Startups)</span></p><p>Nem todo mundo acelerou: o Google atrasou em meses o Gemini novo e as ações caíram 4% no dia. Nessa corrida, chegar atrasado custa caro na bolsa. E o fato que mais mexe com investidor: a Apple ultrapassou a Nvidia e virou a empresa mais valiosa do mundo, encostando nos 5 trilhões de dólares. <span class="src">(Tech Startups)</span></p>
+    <div class="hook"><b>Pra falar com cliente:</b> "A Apple virou a empresa mais valiosa do mundo, passando a Nvidia. Isso mostra como a exposição à tecnologia lá fora, via fundos ou ETFs, faz diferença numa carteira de longo prazo."</div>
+  </div>
+</section>
+
+<section id="ten" class="t-ten">
+  <div class="sec-title"><span class="tag"></span>Tênis</div>
+  <div class="sec-time">🕒 Wimbledon e ranking ATP: 13/07</div>
+  <div class="story">
+    <p>O reinado tem dono claro: o italiano Jannik Sinner. Venceu Wimbledon de novo, o segundo seguido, numa final de quase 4 horas contra o alemão Zverev. É o número 1 do mundo e caminha pra bater recordes de tempo na liderança. <span class="src">(ANSA, ATP)</span></p><p>A boa surpresa é o próprio Zverev, na melhor fase da carreira, campeão de Roland Garros e vice em Wimbledon, agora 2º do ranking. Já Alcaraz está parado desde abril por lesão no punho, com volta prevista pra agosto no US Open. Virou uma era de dois protagonistas com o espanhol tentando voltar pra brigar. <span class="src">(ANSA)</span></p>
+    <div class="hook"><b>Pra falar com cliente:</b> "Assunto leve pra quebrar o gelo na reunião: o Sinner ganhou Wimbledon de novo e virou dono do tênis. Cliente que gosta de esporte adora esse papo antes de entrar nos números."</div>
+  </div>
+</section>
+
+<div class="market">
+  <h2>💹 Impacto no mercado</h2>
+  <p>O eixo do dia é energia. Com o Irã fechando Hormuz e os EUA em bloqueio naval, o petróleo ganha prêmio de risco, e isso mexe com inflação global e o juro lá na frente. No Brasil, a foto de curto prazo é boa: bolsa perto das máximas, dólar em R$ 5,17 e renda fixa perto de 14%. Risco doméstico a vigiar: barulho político em ano eleitoral e a volta das tarifas dos EUA. Fica de olho no Brent e no dólar.</p>
+</div>
+
+<div class="board">
+  <h2>Radar do dia</h2>
+  <p>Petróleo liga tudo hoje: guerra empurrando o barril, barril batendo em inflação e juro. Mensagem pro cliente: renda fixa segue atrativa, vale travar boas taxas antes do juro cair. Assunto leve pra reunião: o domínio do Sinner no tênis.</p>
+</div>
+
+<footer>Resumo pessoal do Wesley &bull; gerado pela skill &bull; nada vai pra cliente</footer>
+
+</div>
+
+<!-- Os áudios ficam guardados aqui como texto, fora do fluxo, e só entram no player quando clicado. -->
+
+<script>
+var velEscolhida=1,VELS=[1,1.25,1.5,0.75];
+function cicloVel(btn){var i=VELS.indexOf(parseFloat(btn.textContent));var nova=VELS[(i+1)%VELS.length];velEscolhida=nova;var bs=document.getElementsByClassName('speed');for(var j=0;j<bs.length;j++)bs[j].textContent=nova+'x';var au=document.getElementsByTagName('audio');for(var k=0;k<au.length;k++)au[k].playbackRate=nova;}
+function compartilhar(){var t=document.title,u=window.location.href,b=document.querySelector('.share');function a(m){if(b){var o=b.textContent;b.textContent=m;setTimeout(function(){b.textContent=o;},1800);}}if(navigator.share){navigator.share({title:t,url:u}).catch(function(){});}else if(navigator.clipboard){navigator.clipboard.writeText(t+"
+"+u).then(function(){a("Link copiado!");}).catch(function(){a("Copie da barra");});}else{a("Copie da barra");}}
+function toggleTheme(){var h=document.documentElement;var n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);document.querySelector('.theme-btn').textContent=n==='dark'?'🌙':'☀️';}
+document.addEventListener('play',function(e){e.target.playbackRate=velEscolhida;},true);
+</script>
+</body>
+</html>
